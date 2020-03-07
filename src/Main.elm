@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, h1, text, textarea)
-import Html.Attributes exposing (class, placeholder, value)
+import Html.Attributes exposing (class, placeholder, value, hidden)
 import Html.Events exposing (onClick, onInput)
 
 
@@ -15,6 +15,7 @@ type alias Model =
     , btn6 : String
     , message : String
     , rating : Int
+    , hideContent: Bool
     }
 
 
@@ -28,6 +29,7 @@ initialModel =
     , btn6 = "♘"
     , message = ""
     , rating = 0
+    , hideContent = False
     }
 
 
@@ -39,6 +41,7 @@ type Msg
     | ClickBtn5
     | ClickBtn6
     | ResetBtn
+    | SentMsg
     | TypingText String
 
 
@@ -68,27 +71,38 @@ update msg model =
 
         TypingText newContent ->
             { model | message = newContent }
+        SentMsg -> 
+            { model | hideContent = True }
+
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "main-div" ]
-        [ h1 [] [ text "Rate it!" ]
-        , div [ class "horse-wrapper" ]
-            [ button [ class "horse-btn", onClick ClickBtn1 ] [ text <| model.btn1 ]
-            , button [ class "horse-btn", onClick ClickBtn2 ] [ text <| model.btn2 ]
-            , button [ class "horse-btn", onClick ClickBtn3 ] [ text <| model.btn3 ]
-            , button [ class "horse-btn", onClick ClickBtn4 ] [ text <| model.btn4 ]
-            , button [ class "horse-btn", onClick ClickBtn5 ] [ text <| model.btn5 ]
-            , button [ class "horse-btn", onClick ClickBtn6 ] [ text <| model.btn6 ]
-            ]
-        , textarea [ class "message-area", value model.message, onInput TypingText, placeholder "Please leave a comment..." ] []
-        , div [ class "button-wrapper" ]
-            [ button [ class "action-btn", onClick ResetBtn ] [ text "Reset" ]
-            , button [ class "action-btn" ] [ text "Send" ]
-            ]
+  div [ class "main-div"]
+    [
+      div [hidden model.hideContent ]
+          [ h1 [] [ text "Rate it!" ]
+          , div [ class "horse-wrapper" ]
+              [ button [ class "horse-btn", onClick ClickBtn1 ] [ text <| model.btn1 ]
+              , button [ class "horse-btn", onClick ClickBtn2 ] [ text <| model.btn2 ]
+              , button [ class "horse-btn", onClick ClickBtn3 ] [ text <| model.btn3 ]
+              , button [ class "horse-btn", onClick ClickBtn4 ] [ text <| model.btn4 ]
+              , button [ class "horse-btn", onClick ClickBtn5 ] [ text <| model.btn5 ]
+              , button [ class "horse-btn", onClick ClickBtn6 ] [ text <| model.btn6 ]
+              ]
+          , textarea [ class "message-area", value model.message, onInput TypingText, placeholder "Please leave a comment..." ] []
+          , div [ class "button-wrapper" ]
+              [ button [ class "action-btn", onClick ResetBtn ] [ text "Reset" ]
+              , button [ class "action-btn", onClick SentMsg  ] [ text "Send" ]
+              ]
+          ]
+    , div [ hidden (model.hideContent == False) ]
+        [
+            h1 [] [ text "Thank you !"]
+          , div [] [ text ("Your rating: " ++ String.fromInt model.rating) ]
+          , div [] [ text ("Your message: " ++ model.message) ]
         ]
-
+    ]
 
 main : Program () Model Msg
 main =
