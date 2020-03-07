@@ -75,7 +75,6 @@ update msg model =
             { model | hideContent = True }
 
 
-
 view : Model -> Html Msg
 view model =
   div [ class "main-div"]
@@ -99,8 +98,8 @@ view model =
     , div [ hidden (model.hideContent == False) ]
         [
             h1 [] [ text "Thank you !"]
-          , div [] [ text ("Your rating: " ++ String.fromInt model.rating) ]
-          , div [] [ text ("Your message: " ++ model.message) ]
+          , div [hidden (model.rating == 0)] [ text ("Your rating: " ++ String.fromInt model.rating) ]
+          , div [hidden (model.message == "")] [ text ("Your message: " ++ model.message) ]
         ]
     ]
 
